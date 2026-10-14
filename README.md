@@ -1,41 +1,133 @@
-# DealerDesk starter
+# VIKMO DealerDesk — AI/ML Intern Assignment
 
-A minimal Django project that already follows the run contract. It has **no models and no business logic**: designing those is the assignment.
+DealerDesk is a Django and PostgreSQL backend for a dealer-management workflow. It supports product catalogue and inventory operations, dealer records, draft orders, order status transitions, supplier synchronization, and forecasting-related endpoints.
 
-What's here:
+## Features
 
-- `dealerdesk/settings.py` reads `DATABASE_URL`, `SUPPLIER_API_URL`, `SUPPLIER_API_KEY` and the LLM keys (Gemini, OpenAI, Anthropic, Groq), refuses anything but PostgreSQL, and turns off authentication for the API.
-- `GET /api/health/` returns `{"status": "ok"}`.
-- `python manage.py seed_data` exists but does nothing yet.
-- `requirements.txt` with Django, DRF, the Postgres driver and `requests`. Add your LLM provider's SDK if you build the assistant.
+- **Product catalogue:** Paginated product listing and product lookup.
+- **Dealer management:** Dealer listing and dealer creation.
+- **Inventory:** Inventory updates through the API.
+- **Order management:** Draft-order creation, validation, and order confirmation/cancellation workflows.
+- **Supplier synchronization:** Supplier data synchronization endpoint with response summaries.
+- **Dealer Assistant:** Chat endpoint with dealer-context validation.
+- **Forecasting and reorder suggestions:** Forecast data and API endpoints for forecasting and inventory replenishment recommendations.
+- **Health check:** API endpoint for checking service availability.
+- **Configuration:** Database and integration settings are supplied through environment variables.
 
-## Set up
+## Technology Stack
 
-1. Copy everything in this folder into the root of your repo, next to `data/`.
-2. Get a PostgreSQL database:
-   - **Hosted, free:** create a project on neon.tech or supabase.com and copy its connection string, or
-   - **Local:** install PostgreSQL and run `createdb dealerdesk`.
-3. Copy `.env.example` to `.env` and fill in `DATABASE_URL` (and your LLM key if you build the assistant).
-4. Install and run:
+- Python
+- Django
+- Django REST Framework
+- PostgreSQL
+- Requests for HTTP integrations
+
+## Prerequisites
+
+- Python 3.11 or later, compatible with the project's dependencies
+- PostgreSQL database
+- Git
+- Windows PowerShell, macOS Terminal, or Linux shell
+
+## Setup
+
+### 1. Clone the repository
 
 ```bash
-python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+git clone https://github.com/Manasa8746/VIKMO-DealerDesk.git
+cd VIKMO-DealerDesk
+```
+
+### 2. Create and activate a virtual environment
+
+**Windows PowerShell:**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**macOS/Linux:**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a local `.env` file based on `.env.example` and configure the PostgreSQL connection and any required integration settings.
+
+Keep `.env` private. Never commit database credentials, API keys, or other secrets to GitHub.
+
+### 5. Apply database migrations
+
+```bash
 python manage.py migrate
-python manage.py seed_data
-python manage.py runserver 0.0.0.0:8000
 ```
 
-5. Check it: `curl http://localhost:8000/api/health/` → `{"status": "ok"}`
-
-## Before you submit
-
-Reset to a fresh database, seed twice, and run the smoke test from the bundle:
+### 6. Seed the database
 
 ```bash
-python smoke_test.py --base-url http://localhost:8000 --track django   # or --track aiml
+python manage.py seed_data
 ```
 
-Add new packages to `requirements.txt` as you go. The grader installs it on Linux with Python 3.11+.
+The seed command loads the catalogue and dealer data supplied with the project. Run it in the intended test environment and verify the resulting database counts before testing.
 
-Docker is optional. If you add a `Dockerfile` or `docker-compose.yml` for yourself, keep the plain commands above working too: the grader uses those, not Docker.
+### 7. Start the development server
+
+```bash
+python manage.py runserver
+```
+
+The default local address is:
+
+`http://127.0.0.1:8000/`
+
+## Verification
+
+Run Django's configuration and model checks:
+
+```bash
+python manage.py check
+```
+
+Run the bundled smoke tests against the local server:
+
+```bash
+python smoke_test.py --all
+```
+
+Start the Django server in a separate terminal before running the smoke tests. The tests exercise basic API contracts, response formats, and selected workflows; they do not guarantee that every edge case or production scenario is covered.
+
+## Supplier Integration
+
+The supplier synchronization endpoint depends on the configured supplier service. If using the bundled mock supplier, follow the mock service's setup instructions and configure `SUPPLIER_API_URL` and any required credentials in the local environment.
+
+## Forecasting
+
+The project includes forecast data at `ml/forecast.csv` and API endpoints for forecast retrieval and reorder suggestions. Forecast outputs should be treated as decision-support information and evaluated against actual sales and inventory history before being used for purchasing decisions.
+
+## Security Notes
+
+- Keep `.env` and local credentials out of version control.
+- Use placeholder values in `.env.example`.
+- Configure appropriate authentication and permissions before deploying the service publicly.
+- Do not use production credentials or production data for local testing.
+
+## Known Limitations and Future Improvements
+
+- Expand automated tests to cover validation failures, edge cases, and concurrent inventory updates.
+- Evaluate forecast quality using suitable metrics and held-out historical data.
+- Strengthen authentication, permissions, logging, and monitoring for production deployment.
+- Validate supplier integration against the intended external service.
+
+## Repository
+
+GitHub: https://github.com/Manasa8746/VIKMO-DealerDesk
